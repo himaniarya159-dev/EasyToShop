@@ -1,0 +1,17 @@
+## .NET / C# Build Outputs
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+
+## Database & Session files
+*.db
+*.db-shm
+*.db-wal
+
+## VS Code & Environment
+.vscode/
+.idea/
+.DS_Store
+appsettings.Development.json

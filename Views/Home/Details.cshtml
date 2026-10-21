@@ -1,0 +1,61 @@
+@model EasyToShop.Data.Entities.Product
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm overflow-hidden rounded-4">
+                <img src="@Model.ImageUrl" class="img-fluid w-100" alt="@Model.Name" style="max-height: 500px; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <span class="badge bg-secondary-subtle text-dark border w-auto mb-2 align-self-start fs-6">@Model.Category</span>
+            <h1 class="fw-bold mb-3">@Model.Name</h1>
+            <h2 class="text-primary fw-bold mb-4">$@Model.Price.ToString("F2")</h2>
+            
+            <p class="text-secondary lead mb-4">@Model.Description</p>
+            
+            <!-- Stock Status -->
+            <div class="mb-4">
+                <span class="text-muted me-2">Availability:</span>
+                @if (Model.StockQuantity > 0)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+                        In Stock (@Model.StockQuantity available)
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-6">
+                        Out of Stock
+                    </span>
+                }
+            </div>
+
+            <!-- Direct HTML Form Action -->
+            <form action="/Cart/AddToCart" method="post" class="d-flex gap-3">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div class="col-3">
+                    <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control form-control-lg text-center" @(Model.StockQuantity == 0 ? "disabled" : "") />
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg flex-grow-1" @(Model.StockQuantity == 0 ? "disabled" : "")>
+                    <i class="bi bi-cart-plus me-2"></i> Add to Cart
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,126 @@
+@model EasyToShop.Models.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container py-5">
+    <h1 class="fw-bold mb-4"><i class="bi bi-credit-card me-2"></i> Checkout</h1>
+
+    <form asp-controller="Checkout" asp-action="PlaceOrder" method="post">
+        <div class="row g-4">
+            <!-- Shipping & Payment Details -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm p-4 mb-4">
+                    <h5 class="fw-bold mb-3">1. Shipping & Contact Details</h5>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="John Doe" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" placeholder="john@example.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ShippingAddress" class="form-label"></label>
+                        <input asp-for="ShippingAddress" class="form-control" placeholder="123 Main St" />
+                        <span asp-validation-for="ShippingAddress" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" placeholder="City" />
+                            <span asp-validation-for="City" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="PostalCode" class="form-label"></label>
+                            <input asp-for="PostalCode" class="form-control" placeholder="Postal Code" />
+                            <span asp-validation-for="PostalCode" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Selection -->
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-3">2. Payment Method</h5>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Credit Card" id="payCard" checked>
+                        <label class="form-check-label fw-semibold" for="payCard">
+                            <i class="bi bi-credit-card-2-front me-1"></i> Credit / Debit Card (Demo)
+                        </label>
+                    </div>
+
+                    <div class="row g-3 my-1 ps-3 border-start ms-2 mb-3">
+                        <div class="col-12">
+                            <input asp-for="CardNumber" class="form-control" placeholder="Card Number (e.g. 4532...)" />
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="ExpirationDate" class="form-control" placeholder="MM/YY" />
+                        </div>
+                        <div class="col-6">
+                            <input asp-for="Cvv" class="form-control" placeholder="CVV" />
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="Cash on Delivery" id="payCOD">
+                        <label class="form-check-label fw-semibold" for="payCOD">
+                            <i class="bi bi-cash-stack me-1"></i> Cash on Delivery (COD)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm p-4">
+                    <h5 class="fw-bold mb-3">Order Summary</h5>
+
+                    <ul class="list-group list-group-flush mb-3">
+                        @foreach (var item in Model.Cart.Items)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <h6 class="my-0">@item.ProductName</h6>
+                                    <small class="text-muted">Qty: @item.Quantity × $@item.UnitPrice.ToString("F2")</small>
+                                </div>
+                                <span class="fw-bold">$@item.TotalPrice.ToString("F2")</span>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Subtotal</span>
+                        <span class="fw-bold">$@Model.Cart.Subtotal.ToString("F2")</span>
+                    </div>
+
+                    @if (Model.Cart.DiscountAmount > 0)
+                    {
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Discount (@Model.Cart.AppliedCouponCode)</span>
+                            <span class="fw-bold">-$@Model.Cart.DiscountAmount.ToString("F2")</span>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between mb-4 fs-5">
+                        <span class="fw-bold">Total</span>
+                        <span class="fw-bold text-primary">$@Model.Cart.Total.ToString("F2")</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-check-circle me-1"></i> Place Order
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
