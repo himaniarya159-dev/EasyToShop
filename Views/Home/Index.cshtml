@@ -49,3 +49,31 @@
         }
     </div>
 </div>
+<div class="position-relative">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search products..." autocomplete="off" />
+    <div id="searchResults" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000;"></div>
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('input', async function () {
+        let term = this.value;
+        let resultsContainer = document.getElementById('searchResults');
+
+        if (term.length < 2) {
+            resultsContainer.innerHTML = '';
+            return;
+        }
+
+        let response = await fetch(`/Home/SearchProducts?term=${encodeURIComponent(term)}`);
+        let products = await response.json();
+
+        resultsContainer.innerHTML = '';
+        products.forEach(p => {
+            let item = document.createElement('a');
+            item.href = `/Home/Details/${p.id}`;
+            item.className = 'list-group-item list-group-item-action';
+            item.innerText = `${p.title} - $${p.price}`;
+            resultsContainer.appendChild(item);
+        });
+    });
+</script>

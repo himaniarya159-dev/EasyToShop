@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using EasyToShop.Data;
 using EasyToShop.Data.Entities;
 using EasyToShop.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace EasyToShop.Controllers;
 
@@ -17,9 +18,20 @@ public class AdminController : Controller
     }
 
     [HttpGet]
-    public IActionResult AddProduct()
+    public async Task<IActionResult> SearchProducts(string term)
     {
-        return View();
+        if (string.IsNullOrWhiteSpace(term))
+        {
+            return Json(new List<object>());
+        }
+
+        var products = await _db.Products
+            .Where(p => EF.Functions.Like(p.Name, $"%{term}%"))
+            .Select(p => new { id = p.Id, title = p.Name, price = p.Price })
+            .Take(5)
+            .ToListAsync();
+
+        return Json(products);
     }
 
     [HttpPost]
