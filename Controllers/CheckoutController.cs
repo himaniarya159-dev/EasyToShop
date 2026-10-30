@@ -5,6 +5,7 @@ using EasyToShop.Helpers;
 using EasyToShop.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyToShop.Controllers;
 
@@ -154,5 +155,20 @@ public class CheckoutController : Controller
         };
 
         return View(summaryDto);
+    }
+
+    // ==========================================
+    // Added: Order History Page Action Endpoint
+    // ==========================================
+    [HttpGet]
+    public async Task<IActionResult> Orders()
+    {
+        var orders = await _db.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+            .OrderByDescending(o => o.OrderDate)
+            .ToListAsync();
+
+        return View(orders);
     }
 }
