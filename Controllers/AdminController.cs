@@ -17,6 +17,14 @@ public class AdminController : Controller
         _webHostEnvironment = webHostEnvironment;
     }
 
+    // GET: /Admin/AddProduct
+    [HttpGet]
+    public IActionResult AddProduct()
+    {
+        return View();
+    }
+
+    // GET: /Admin/SearchProducts?term=...
     [HttpGet]
     public async Task<IActionResult> SearchProducts(string term)
     {
@@ -34,6 +42,7 @@ public class AdminController : Controller
         return Json(products);
     }
 
+    // POST: /Admin/AddProduct
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddProduct(ProductCreateViewModel model)
@@ -77,6 +86,8 @@ public class AdminController : Controller
 
         _db.Products.Add(product);
         await _db.SaveChangesAsync();
+
+        ModelState.Clear(); // Ensure form state clears properly after saving
 
         return RedirectToAction("Index", "Home");
     }

@@ -12,7 +12,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EasyToShop</a>
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">EasyToShop</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -24,6 +24,14 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <!-- Added Order History Tab -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Checkout" asp-action="Orders">Order History</a>
+                        </li>
+                        <!-- Added Admin Panel Tab -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="AddProduct">Admin Panel</a>
                         </li>
                     </ul>
                     
@@ -72,7 +80,8 @@
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    // Update this line inside _Layout.cshtml script tag:
+let response = await fetch(`/Admin/SearchProducts?term=${encodeURIComponent(term)}`);
     <script src="~/js/site.js" asp-append-version="true"></script>
     
     <!-- Search & Modal Scripts -->
@@ -101,6 +110,7 @@
                     let item = document.createElement('a');
                     item.href = `/Home/Details/${p.id}`;
                     item.className = 'list-group-item list-group-item-action';
+                    // Fixed template literal string interpolation syntax
                     item.innerText = `${p.title} - $${p.price}`;
                     resultsContainer.appendChild(item);
                 });
