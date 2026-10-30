@@ -25,11 +25,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <!-- Added Order History Tab -->
+                        <!-- Order History & Returns Tab -->
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Checkout" asp-action="Orders">Order History</a>
                         </li>
-                        <!-- Added Admin Panel Tab -->
+                        <!-- Admin Panel Tab -->
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Admin" asp-action="AddProduct">Admin Panel</a>
                         </li>
@@ -80,8 +80,7 @@
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    // Update this line inside _Layout.cshtml script tag:
-let response = await fetch(`/Admin/SearchProducts?term=${encodeURIComponent(term)}`);
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     
     <!-- Search & Modal Scripts -->
@@ -97,7 +96,8 @@ let response = await fetch(`/Admin/SearchProducts?term=${encodeURIComponent(term
             }
 
             try {
-                let response = await fetch(`/Home/SearchProducts?term=${encodeURIComponent(term)}`);
+                // Correctly pointing to AdminController search endpoint
+                let response = await fetch(`/Admin/SearchProducts?term=${encodeURIComponent(term)}`);
                 let products = await response.json();
 
                 resultsContainer.innerHTML = '';
@@ -110,7 +110,7 @@ let response = await fetch(`/Admin/SearchProducts?term=${encodeURIComponent(term
                     let item = document.createElement('a');
                     item.href = `/Home/Details/${p.id}`;
                     item.className = 'list-group-item list-group-item-action';
-                    // Fixed template literal string interpolation syntax
+                    // Clean fixed string interpolation for title and price
                     item.innerText = `${p.title} - $${p.price}`;
                     resultsContainer.appendChild(item);
                 });

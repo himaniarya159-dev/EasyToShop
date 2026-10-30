@@ -1,18 +1,26 @@
 @model IEnumerable<EasyToShop.Data.Entities.Order>
 
 @{
-    ViewData["Title"] = "Order History";
+    ViewData["Title"] = "Order History & Returns";
 }
 
 <div class="container my-4">
-    <h2 class="mb-3">Order History</h2>
+    <h2 class="mb-3">Order History & Returns</h2>
     <hr />
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info shadow-sm p-4 text-center">
             <h4 class="alert-heading">No Orders Found!</h4>
-            <p class="mb-0">You haven't placed any orders yet or the database table is currently empty.</p>
+            <p class="mb-0">You haven't placed any orders yet.</p>
             <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Start Shopping</a>
         </div>
     }
@@ -27,7 +35,7 @@
                         <small class="text-light">@order.OrderDate.ToString("MMM dd, yyyy HH:mm")</small>
                     </div>
                     <div>
-                        <span class="badge bg-success">@order.Status</span>
+                        <span class="badge bg-secondary">@order.Status</span>
                         <strong class="ms-2 text-warning">$@order.TotalAmount.ToString("F2")</strong>
                     </div>
                 </div>
@@ -46,7 +54,7 @@
                     </div>
 
                     <h6>Items Ordered</h6>
-                    <ul class="list-group">
+                    <ul class="list-group mb-3">
                         @if (order.OrderItems != null && order.OrderItems.Any())
                         {
                             @foreach (var item in order.OrderItems)
@@ -61,6 +69,46 @@
                             }
                         }
                     </ul>
+
+                    <!-- Return Request Trigger Button -->
+                    <div class="d-flex justify-content-end">
+                        @if (order.Status == "Return Requested")
+                        {
+                            <span class="badge bg-warning text-dark p-2">Return Processing</span>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#returnModal-@order.Id">
+                                Request Return / Refund
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unique Modal for Each Order Return -->
+            <div class="modal fade" id="returnModal-@order.Id" tabindex="-1" aria-labelledby="returnModalLabel-@order.Id" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form asp-controller="Checkout" asp-action="RequestReturn" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="returnModalLabel-@order.Id">Return Request for Order #@order.Id</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="hidden" name="orderId" value="@order.Id" />
+                                <div class="mb-3">
+                                    <label for="reason-@order.Id" class="form-label">Reason for Return:</label>
+                                    <textarea name="reason" id="reason-@order.Id" class="form-control" rows="3" placeholder="Please describe why you are returning this order..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger">Submit Return Request</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         }

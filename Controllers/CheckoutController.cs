@@ -133,8 +133,7 @@ public class CheckoutController : Controller
     [HttpGet]
     public async Task<IActionResult> Confirmation(int id)
     {
-        var order = await _db.Orders
-            .FindAsync(id);
+        var order = await _db.Orders.FindAsync(id);
 
         if (order == null)
         {
@@ -157,9 +156,6 @@ public class CheckoutController : Controller
         return View(summaryDto);
     }
 
-    // ==========================================
-    // Added: Order History Page Action Endpoint
-    // ==========================================
     [HttpGet]
     public async Task<IActionResult> Orders()
     {
@@ -170,5 +166,31 @@ public class CheckoutController : Controller
             .ToListAsync();
 
         return View(orders);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestReturn(int orderId, string reason)
+    {
+        var order = await _db.Orders.FindAsync(orderId);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        var returnRequest = new ReturnRequest
+        {
+            OrderId = order.Id,
+            Reason = string.IsNullOrWhiteSpace(reason) ? "Customer requested return" : reason,
+            CreatedAt = DateTime.UtcNow,
+            Status = "Pending Review"
+        };
+
+        _db.ReturnRequests.Add(returnRequest);
+        order.Status = "Return Requested";
+        await _db.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = $"Return request for Order #{order.Id} has been submitted successfully.";
+        return RedirectToAction(nameof(Orders));
     }
 }

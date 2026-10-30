@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using EasyToShop.Data;
 using EasyToShop.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyToShop.Controllers;
@@ -20,6 +21,22 @@ public class HomeController : Controller
     {
         var products = _db.Products.ToList();
         return View(products);
+    }
+
+    // ==========================================
+    // Added: Product Details Action Endpoint
+    // ==========================================
+    [HttpGet]
+    [AllowAnonymous] // Ensures regular shoppers can view details without logging in
+    public async Task<IActionResult> Details(int id)
+    {
+        var product = await _db.Products.FindAsync(id);
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        return View(product);
     }
 
     public IActionResult Privacy()
